@@ -38,6 +38,8 @@ interface ViewState {
   chat: Json[]
   feedLang: string
   feedSort: string
+  /** Prefilled question for Deep Research (set by "Research deeper"). */
+  draft: string
 }
 
 const freshBrandView = (D: Json): Partial<ViewState> => ({
@@ -101,6 +103,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     chat: [],
     feedLang: '',
     feedSort: 'engagement',
+    draft: '',
   }))
 
   const patch = useCallback((p: Partial<ViewState>) => setView((v) => ({ ...v, ...p })), [])
