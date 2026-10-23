@@ -1,5 +1,5 @@
 /* Right-hand evidence overlay (original openEvidence / postCard / sigCard / renderPanelBody, lines 1068-1107). */
-import { useEffect, useMemo, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import { compact, dfmt, fmt } from '../lib/format'
 import type { Json } from '../lib/types'
 import { useApp } from '../store/AppContext'
@@ -32,14 +32,14 @@ export function PostCard({ p }: { p: Json }) {
         {p.text || '(no text)'}
       </div>
       {p.media && <div className="md">Video/image: {p.media}</div>}
-      {p.sri_lanka_context && <div className="md">Context: {p.sri_lanka_context}</div>}
+      {p.sri_lanka_context && <div className="md">Context: {String(p.sri_lanka_context)}</div>}
       <div className="st">
         {p.likes != null && <span><b>{fmt(p.likes)}</b> likes</span>}
         {p.comments != null && <span><b>{fmt(p.comments)}</b> comments</span>}
         {p.shares != null && <span><b>{fmt(p.shares)}</b> shares</span>}
         {p.engagement != null && <span><b>{fmt(p.engagement)}</b> engagement</span>}
         {(p.skus || []).length > 0 && (
-          <span>{p.skus.map((s: string) => <span key={s} className="tag area">{L.skuShort(s)}</span>)}</span>
+          <span>{p.skus.map((s: string, i: number) => <Fragment key={s}>{i > 0 ? ' ' : null}<span className="tag area">{L.skuShort(s)}</span></Fragment>)}</span>
         )}
         <a className="btn sm open" href={p.url} target="_blank" rel="noopener">Open post <Icon name="ext" /></a>
       </div>
@@ -105,7 +105,7 @@ export function SigCard({ s }: { s: Json }) {
 export function EvidencePanel() {
   const { ctx, closeEvidence } = useEvidence()
   const { L } = useApp()
-  const [tab, setTab] = useState<string>('signals')
+  const [choice, setChoice] = useState<{ ctx: unknown; tab: string } | null>(null)
 
   const built = useMemo(() => {
     if (!ctx || !L) return null
@@ -127,10 +127,9 @@ export function EvidencePanel() {
     return { sigs, posts, srcs, tabs }
   }, [ctx, L])
 
-  useEffect(() => {
-    if (!ctx || !built) return
-    setTab(ctx.start && built.tabs.some((t) => t[0] === ctx.start) ? ctx.start : built.tabs[0]?.[0] || 'signals')
-  }, [ctx, built])
+  const defaultTab = ctx && built ? (ctx.start && built.tabs.some((t) => t[0] === ctx.start) ? ctx.start : built.tabs[0]?.[0] || 'signals') : 'signals'
+  const tab = choice && choice.ctx === ctx ? choice.tab : defaultTab
+  const setTab = (t: string) => setChoice({ ctx, tab: t })
 
   const on = !!ctx
   return (

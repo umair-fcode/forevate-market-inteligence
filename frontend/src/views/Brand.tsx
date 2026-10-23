@@ -1,7 +1,8 @@
 /* My Brand tab, ported from VIEWS.brand (original lines 1299-1345). */
 import { PostCard } from '../components/EvidencePanel'
 import { LineChart } from '../components/charts'
-import { FEEL_TIP, FeelCell, FeelGauge, feelCls, feelWord } from '../components/feel'
+import { FeelCell, FeelGauge } from '../components/feel'
+import { FEEL_TIP, feelCls, feelWord } from '../lib/feel'
 import { BarRows, Card, ChartNote, Delta, EvBtn, Info, Kpi, Legend, Pill, SignalList, SoWhat, SrcLink, Tag } from '../components/ui'
 import { allPosts, postsInWeek } from '../lib/evidence'
 import { matchPost } from '../lib/filters'

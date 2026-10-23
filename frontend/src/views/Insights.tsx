@@ -185,7 +185,7 @@ function Detailed({ cards }: { cards: Json[] }) {
 }
 
 function Actions({ I }: { I: Json }) {
-  const { data, L, f, acted, go } = useApp()
+  const { data, L, f, acted } = useApp()
   if (!data || !L) return null
   const acts = (I.actions || []).filter((a: Json) => !f.sku || a.sku === f.sku)
   const added = acted.map((id) => L.insight(id)).filter(Boolean) as Json[]
@@ -228,9 +228,8 @@ function Actions({ I }: { I: Json }) {
       <Card
         title="Did our past decisions work?"
         right={<Tag kind="demo" text="Demo data" tip="Sales results come from My Demand, which is illustrative until dealer sales are connected" />}
-        sub="Linked to My Demand."
+        sub="Linked to My Demand. Open My Demand"
       >
-        <button className="linkbtn" onClick={() => go('demand', 0)}>Open My Demand</button>
         {dr.length ? (
           <div className="scroll">
             <table className="tbl">

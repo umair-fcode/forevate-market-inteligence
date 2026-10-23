@@ -1,27 +1,11 @@
 /* App state, replacing the original global `state` object. Per-viewer conveniences persist in localStorage under 'fv.*'. */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { fetchBrandIndex, loadBrand } from '../lib/data'
+import { store } from '../lib/storage'
 import { EMPTY_FILTERS } from '../lib/filters'
 import { createLookups, type Lookups } from '../lib/lookups'
 import { ALL_TABS } from '../lib/tabs'
 import type { BrandData, BrandEntry, Filters, Json } from '../lib/types'
-
-export const store = {
-  get<T = Json>(k: string): T | null {
-    try {
-      return JSON.parse(localStorage.getItem('fv.' + k) as string)
-    } catch {
-      return null
-    }
-  },
-  set(k: string, v: unknown) {
-    try {
-      localStorage.setItem('fv.' + k, JSON.stringify(v))
-    } catch {
-      /* storage unavailable */
-    }
-  },
-}
 
 interface ViewState {
   tab: string

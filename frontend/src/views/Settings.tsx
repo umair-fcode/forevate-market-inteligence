@@ -1,4 +1,5 @@
 /* Settings tab, ported from VIEWS.settings (original lines 1669-1681). */
+import { Fragment } from 'react'
 import { Card, Pill, SrcLink, Tag } from '../components/ui'
 import { Icon } from '../components/Icon'
 import { cap, dfmt } from '../lib/format'
@@ -35,7 +36,7 @@ export function SettingsView() {
                     <td className="b">{L.skuName(m.our_sku)}</td>
                     <td>
                       {m.competitor_skus
-                        ? m.competitor_skus.map((c: Json, n: number) => <span key={n} className="chip static">{c.brand} {c.model} </span>)
+                        ? m.competitor_skus.map((c: Json, n: number) => <Fragment key={n}>{n > 0 ? ' ' : null}<span className="chip static">{c.brand} {c.model}</span></Fragment>)
                         : <span className="chip static">{m.competitor || '—'}</span>}
                     </td>
                   </tr>
@@ -129,7 +130,7 @@ export function SettingsView() {
               <tr>
                 <td className="b">Fcode Labs Administration<div className="muted small">admin@fcodelabs.com</div></td>
                 <td><Pill kind="good">Owner</Pill></td>
-                <td>{brands.map((b) => <span key={b.id} className="chip static">{b.name} </span>)}</td>
+                <td>{brands.map((b, n) => <Fragment key={b.id}>{n > 0 ? ' ' : null}<span className="chip static">{b.name}</span></Fragment>)}</td>
               </tr>
             </tbody>
           </table>

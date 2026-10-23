@@ -1,7 +1,8 @@
 /* Sentiments sub-tab of My Competitors (original sentimentsView, lines 1460-1516). */
 import { useState } from 'react'
 import { LineChart } from '../components/charts'
-import { DivRows, FEEL_TIP, FeelCell, FeelGauge, feelCls, feelWord } from '../components/feel'
+import { DivRows, FeelCell, FeelGauge } from '../components/feel'
+import { FEEL_TIP, feelCls, feelWord } from '../lib/feel'
 import { Card, ChartNote, EvBtn, Info, Kpi, Legend, MeansBox, ScopeTag, SoWhat } from '../components/ui'
 import { activeFilters, matchSig } from '../lib/filters'
 import { compact, dfmt, signed } from '../lib/format'

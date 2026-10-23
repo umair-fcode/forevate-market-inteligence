@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import { EvidencePanel } from './components/EvidencePanel'
 import { ViewBoundary } from './components/ViewBoundary'
 import { Tooltip } from './components/Tooltip'
-import { Showcase } from './views/Showcase'
 import { VIEWS } from './views'
 import { Rail } from './layout/Rail'
 import { Topbar } from './layout/Topbar'
@@ -33,7 +32,6 @@ export default function App() {
   if (booting || loading) content = <div className="loading"><div className="spin" /><div>Loading brand data…</div></div>
   else if (error) content = <div className="empty">Could not load the brand: {error}</div>
   else if (!data) content = <div className="empty">No brand is onboarded yet. Use the brand menu to add one.</div>
-  else if (location.search.includes('showcase')) content = <Showcase />
   else if (VIEWS[tab]) { const View = VIEWS[tab]; content = <ViewBoundary key={`${data.brand.id}-${tab}`}><View /></ViewBoundary> }
   else content = <div className="empty">{t.name}{t.subs[sub] ? ` · ${t.subs[sub]}` : ''} — coming in a later step.</div>
 

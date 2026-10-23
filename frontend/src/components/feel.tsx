@@ -1,14 +1,9 @@
 /* "How people feel" gauges, ported from original lines 1216-1222. */
 import type { KeyboardEvent } from 'react'
+import { feelCls, feelWord } from '../lib/feel'
 import { signed } from '../lib/format'
 import { useEvidence, type EvidenceCtx } from '../store/EvidenceContext'
 
-export const FEEL_TIP =
-  'How people feel: the balance of positive and negative talk, from −100 (all negative) to +100 (all positive). 0 means evenly mixed. Measured from the early signs, weighted by engagement.'
-
-export const feelWord = (v: number | null | undefined): string =>
-  v == null ? '—' : v >= 60 ? 'Very positive' : v >= 20 ? 'Positive' : v > -20 ? 'Mixed' : v > -60 ? 'Negative' : 'Very negative'
-export const feelCls = (v: number | null | undefined): string => (v == null ? 'mix' : v >= 20 ? 'pos' : v <= -20 ? 'neg' : 'mix')
 const feelPos = (v: number) => Math.max(0, Math.min(100, (Number(v) + 100) / 2))
 
 export function FeelGauge({ v, rivals = [] }: { v: number; rivals?: { name: string; v: number }[] }) {

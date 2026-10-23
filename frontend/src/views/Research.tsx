@@ -121,7 +121,11 @@ function Ask({ ai }: { ai: Json }) {
   const timers = useRef<number[]>([])
 
   /* "Research deeper" on an insight pre-fills the question. */
-  useEffect(() => { if (draft) setQuestion(draft) }, [draft])
+  const [prevDraft, setPrevDraft] = useState(draft)
+  if (draft !== prevDraft) {
+    setPrevDraft(draft)
+    if (draft) setQuestion(draft)
+  }
   useEffect(() => () => timers.current.forEach(window.clearTimeout), [])
 
   const ask = () => {

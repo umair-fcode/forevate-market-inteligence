@@ -1,5 +1,6 @@
 /* My Personas tab, ported from VIEWS.personas (original lines 1348-1372). */
-import { DivRows, FEEL_TIP } from '../components/feel'
+import { DivRows } from '../components/feel'
+import { FEEL_TIP } from '../lib/feel'
 import { BarRows, Card, ChartNote, EvBtn, Info, InsMini, MeansBox, Pill, ScopeTag, SoWhat } from '../components/ui'
 import { postsOfSignals, sigsWhere } from '../lib/evidence'
 import { compact, dfmt, dshort, pct, signed } from '../lib/format'

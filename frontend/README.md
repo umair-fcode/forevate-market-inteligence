@@ -1,32 +1,51 @@
-# React + TypeScript + Vite
+# Forevate Market Intelligence: frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A React + TypeScript + Vite port of the original single-file `index.html` dashboard. It is data-driven: every screen is drawn from a brand's files, so onboarding a brand needs no code changes.
 
-Currently, two official plugins are available:
+## Run
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev        # http://localhost:5173
+npm run build      # type-check + production build into dist/
+npm run preview    # serve the production build
+npm run lint
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Brands and data
+
+Brands are folders under `public/brands/`, served as-is:
+
+```
+public/brands/
+  index.json                 list of brands + dashboard_url (login link used in email digests)
+  <brand>/manifest.json      name, market, currency, file names, digest recipients
+  <brand>/data.json          one key per tab (insights, my_brand, my_personas, ...)
+  <brand>/signals.json       signals in full, with their evidence posts
+  <brand>/posts.jsonl        one real post per line, with its URL
+  <brand>/GUIDE.md           field-by-field guide for building a brand folder
+```
+
+To add a brand: add its folder, then one entry in `index.json`. Or use the profile menu, **Add a brand**, to load `data.json` (and optionally `manifest.json`, `posts.jsonl`, `signals.json`) from your computer for the current visit.
+
+## Source layout
+
+```
+src/
+  main.tsx, App.tsx          providers + page shell
+  styles/app.css             the original stylesheet, unchanged
+  lib/                       pure helpers: data loading, formatting, lookups, filters, evidence, factors, digest
+  store/                     AppContext (tab, filters, brand), UIContext (toast, modal), EvidenceContext (side panel)
+  layout/                    Rail, Topbar, menus, popover, add-brand and digest modals
+  components/                shared pieces: Kpi, Card, charts, evidence panel, tooltip, feeling gauges
+  views/                     one file per tab (Insights, Brand, Personas, Customers, Competitors + Sentiments,
+                             Market, Demand, Research, Settings, Sources); views/index.tsx maps tab id -> view
+digest/                      digest.js (shared with the Node mailer), send-digest.example.js, README.md
+```
+
+Notes:
+
+- `data.json` is large and irregular, so its sections are typed loosely (`Json` in `lib/types.ts`).
+- `digest/digest.js` is a UMD module used by both the browser (preview in the alerts menu) and the Node mailer; `digest/package.json` keeps that folder CommonJS so `require('./digest.js')` keeps working.
+- Per-viewer conveniences (last tab, last brand) are kept in `localStorage` under `fv.*`.
+- Deep links such as `#insights` or `#market` open that tab.

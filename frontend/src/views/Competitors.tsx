@@ -1,7 +1,8 @@
 /* My Competitors tab, ported from VIEWS.competitors (original lines 1408-1457). Sentiments lives in Sentiments.tsx. */
 import type { ReactNode } from 'react'
 import { GroupedBars } from '../components/charts'
-import { FEEL_TIP, FeelCell, FeelGauge, feelCls, feelWord } from '../components/feel'
+import { FeelCell, FeelGauge } from '../components/feel'
+import { FEEL_TIP, feelCls, feelWord } from '../lib/feel'
 import { Card, ChartNote, EvBtn, Info, InsMini, Kpi, Legend, MeansBox, Pill, SoWhat, SrcLink, SrcLinks, Tag } from '../components/ui'
 import { compact, dfmt, dshort, fmt, pct, signed } from '../lib/format'
 import type { Json } from '../lib/types'
