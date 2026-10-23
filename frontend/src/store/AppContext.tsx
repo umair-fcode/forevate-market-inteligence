@@ -40,6 +40,9 @@ interface ViewState {
   feedSort: string
   /** Prefilled question for Deep Research (set by "Research deeper"). */
   draft: string
+  /** Selected column of the two Demand charts (null = default). */
+  demandMonth: number | null
+  demandWeek: number | null
 }
 
 const freshBrandView = (D: Json): Partial<ViewState> => ({
@@ -50,6 +53,8 @@ const freshBrandView = (D: Json): Partial<ViewState> => ({
   openIns: null,
   sub: 0,
   chat: [],
+  demandMonth: null,
+  demandWeek: null,
 })
 
 function initialTab(): string {
@@ -104,6 +109,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     feedLang: '',
     feedSort: 'engagement',
     draft: '',
+    demandMonth: null,
+    demandWeek: null,
   }))
 
   const patch = useCallback((p: Partial<ViewState>) => setView((v) => ({ ...v, ...p })), [])

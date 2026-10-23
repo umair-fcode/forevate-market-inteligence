@@ -1,6 +1,7 @@
 /* Shared building blocks, ported from the original string helpers (lines 972-992). */
 import type { KeyboardEvent, ReactNode } from 'react'
 import { activeFilters, matchSig } from '../lib/filters'
+import type { Factor } from '../lib/factors'
 import { compact, dfmt, fmt } from '../lib/format'
 import type { Json } from '../lib/types'
 import { useApp } from '../store/AppContext'
@@ -280,6 +281,31 @@ export function DemoBanner({ note, extra }: { note: string; extra?: ReactNode })
     <div className="banner demo">
       <Icon name="info" />
       <div><b>Demo data.</b> {note} {extra}</div>
+    </div>
+  )
+}
+
+/** Dated factors behind a selected month or week (original factorList). */
+export function FactorList({ F }: { F: Factor[] }) {
+  if (!F.length) return <div className="empty">No dated factor in the evidence for this period.</div>
+  return (
+    <div className="factors">
+      {F.map((f, n) => (
+        <div className="fx" key={n}>
+          <span className="k">
+            {f.dir ? <Dir d={f.dir} /> : null}
+            {['Risk', 'Watch', 'Opportunity'].includes(f.kind) ? <Pill kind={f.kind} /> : <span className="tag area">{f.kind}</span>}
+          </span>
+          <div>
+            <div className="t"><b>{f.text}</b></div>
+            {f.m ? <div className="m">{f.m}</div> : null}
+          </div>
+          <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+            {f.ev ? <EvBtn ctx={f.ev} label="Evidence" /> : null}
+            {f.ins ? <InsLink id={f.ins} /> : null}
+          </div>
+        </div>
+      ))}
     </div>
   )
 }
