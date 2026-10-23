@@ -273,3 +273,13 @@ export function SignalList({ sigs, title = 'Early signs', limit = 8 }: { sigs?: 
   )
 }
 
+
+/** "Demo data." banner (original demoBanner, line 1374). */
+export function DemoBanner({ note, extra }: { note: string; extra?: ReactNode }) {
+  return (
+    <div className="banner demo">
+      <Icon name="info" />
+      <div><b>Demo data.</b> {note} {extra}</div>
+    </div>
+  )
+}
