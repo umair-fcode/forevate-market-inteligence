@@ -1,0 +1,25 @@
+{
+  "_about": "List of brands the dashboard can show. To onboard a brand: add a folder under brands/ with a manifest.json plus its data files (see brands/bajaj/manifest.json), then add one entry here.",
+  "brands": [
+    {
+      "id": "bajaj",
+      "name": "Bajaj",
+      "organisation": "David Pieris Motor Company (DPMC)",
+      "market": "Sri Lanka",
+      "category": "Two- and three-wheelers",
+      "folder": "brands/bajaj",
+      "status": "live"
+    },
+    {
+      "id": "munchee",
+      "name": "Munchee",
+      "organisation": "Ceylon Biscuits Limited (CBL)",
+      "market": "Sri Lanka",
+      "category": "Biscuits and snacks",
+      "folder": "brands/munchee",
+      "status": "live"
+    }
+  ],
+  "dashboard_url": "https://claude.ai/artifact/DSXJW1d2n2anv7RPmLJ8Fe",
+  "_dashboard_url_note": "Used as the login link in email digests; deep links append #insights, #brand, #competitors, #market, #demand."
+}

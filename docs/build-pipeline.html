@@ -1,0 +1,253 @@
+<title>Intel Build Pipeline</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: single reading column; diagram first, then phase task lists, then open decisions */
+:root {
+  --bg: #f3f5f7;
+  --surface: #ffffff;
+  --fg: #16202b;
+  --muted: #5b6876;
+  --line: #d3dae1;
+  --accent: #0b7a75;
+  --accent-soft: #dff1ef;
+  --warn: #9a5b00;
+  --font-display: "Bricolage Grotesque", "Segoe UI", sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1720; --surface: #17212c; --fg: #e4eaf0; --muted: #93a1b0;
+    --line: #2b3947; --accent: #4cc9c0; --accent-soft: #123a3a; --warn: #e0a64a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1720; --surface: #17212c; --fg: #e4eaf0; --muted: #93a1b0;
+  --line: #2b3947; --accent: #4cc9c0; --accent-soft: #123a3a; --warn: #e0a64a;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 15px; line-height: 1.55;
+  padding-block: 32px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+main { max-width: 880px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }
+h1, h2 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: 2rem; }
+h2 { font-size: 1.3rem; }
+.sub { color: var(--muted); margin: 8px 0 0; max-width: 65ch; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+section { display: flex; flex-direction: column; gap: 16px; }
+figure { margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.scroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 12px; }
+.scroll svg { display: block; width: 100%; min-width: 560px; height: auto; color: var(--fg); }
+figcaption { color: var(--muted); font-size: 13px; max-width: 70ch; }
+svg text { font-family: var(--font-body); font-size: 12.5px; fill: currentColor; }
+svg .col-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; }
+svg .box { fill: var(--surface); stroke: currentColor; stroke-width: 1.3; }
+svg .box-done { stroke-dasharray: 4 3; opacity: .6; }
+svg .box-new { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.6; }
+svg .edge { stroke: currentColor; stroke-width: 1.3; fill: none; }
+svg .edge-link { stroke: var(--accent); stroke-width: 1.8; fill: none; stroke-dasharray: 5 4; }
+svg .link-label { fill: var(--accent); font-family: var(--font-mono); font-size: 11px; }
+svg .sub-t { fill: var(--muted); font-size: 11px; }
+.progress { display: flex; align-items: center; gap: 12px; font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+.bar { flex: 1; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.bar > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+.phase { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; }
+.phase > header { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
+.phase > header p { margin: 0; color: var(--muted); font-size: 13px; }
+ol { list-style: none; margin: 0; padding: 0; counter-reset: none; }
+li { border-bottom: 1px solid var(--line); }
+li:last-child { border-bottom: 0; }
+label { display: grid; grid-template-columns: 22px 28px minmax(0, 1fr); gap: 4px 10px; padding: 12px 16px; cursor: pointer; align-items: start; }
+label:hover { background: var(--accent-soft); }
+input[type="checkbox"] { width: 17px; height: 17px; margin: 3px 0 0; accent-color: var(--accent); }
+input[type="checkbox"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.n { font-family: var(--font-mono); font-size: 12px; color: var(--muted); padding-top: 3px; }
+.t { min-width: 0; }
+.t b { font-weight: 600; }
+.t ul { margin: 6px 0 0; padding-left: 18px; color: var(--muted); font-size: 13.5px; }
+.tag { display: inline-block; font-family: var(--font-mono); font-size: 11px; color: var(--accent); border: 1px solid var(--accent); border-radius: 3px; padding: 0 5px; margin-left: 6px; white-space: nowrap; }
+.tag.eta { color: var(--warn); border-color: var(--warn); }
+li.done .t b { text-decoration: line-through; color: var(--muted); }
+.decisions { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.decisions div { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; min-width: 0; }
+.decisions h3 { margin: 0 0 4px; font-size: 14px; font-weight: 600; color: var(--warn); }
+.decisions h3.ok { color: var(--accent); }
+.decisions p { margin: 0; font-size: 13.5px; color: var(--muted); }
+@page { margin: 0; }
+@media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } .phase, figure { break-inside: avoid; } .progress { display: none; } section + section { break-before: page; } body { padding-block: 14mm; } html { background: var(--bg); } }
+@media (prefers-reduced-motion: reduce) { .bar > i { transition: none; } }
+</style>
+
+<main>
+  <header>
+    <div class="eyebrow">Forevate Market Intelligence</div>
+    <h1>Intel Build Pipeline</h1>
+    <p class="sub">First build and repeat build for a brand, from scrape to Firebase. Current brand: David Pieris (DPMC). The repeat build only scrapes what changed since the last export.</p>
+  </header>
+
+  <section>
+    <h2>Flow</h2>
+    <figure>
+      <div class="scroll">
+        <svg viewBox="0 0 760 650" role="img" aria-label="Two build flows side by side. The first build gathers posts with Lazy Susy and writes a JSON dump. The next build scrapes only the delta, merges it into that dump, then both flows extract data with an LLM, build the frontend and push to Firebase.">
+          <defs>
+            <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
+            </marker>
+            <marker id="ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" fill="var(--accent)"/>
+            </marker>
+          </defs>
+
+          <text class="col-title" x="175" y="24" text-anchor="middle">First build</text>
+          <text class="col-title" x="585" y="24" text-anchor="middle">Next build</text>
+
+          <!-- first build column: x 40..310, center 175 -->
+          <rect class="box box-done" x="40" y="44" width="270" height="56" rx="4"/>
+          <text x="175" y="68" text-anchor="middle">Brand + date range</text>
+          <text x="175" y="86" text-anchor="middle">+ related keywords</text>
+
+          <rect class="box box-done" x="40" y="136" width="270" height="64" rx="4"/>
+          <text x="175" y="162" text-anchor="middle">Lazy Susy</text>
+          <text class="sub-t" x="175" y="180" text-anchor="middle">post gathering + topic generation</text>
+
+          <rect class="box box-done" x="40" y="236" width="270" height="48" rx="4"/>
+          <text class="link-label" x="316" y="296">done: dump in hand</text>
+          <text x="175" y="265" text-anchor="middle">JSON dump</text>
+
+          <rect class="box" x="40" y="326" width="270" height="96" rx="4"/>
+          <text x="175" y="358" text-anchor="middle">Extract data for frontend</text>
+          <text class="sub-t" x="175" y="378" text-anchor="middle">restructure with LLM</text>
+          <text class="sub-t" x="175" y="396" text-anchor="middle">+ facts generation</text>
+
+          <rect class="box" x="40" y="466" width="270" height="48" rx="4"/>
+          <text x="175" y="495" text-anchor="middle">Frontend build</text>
+
+          <rect class="box" x="40" y="556" width="270" height="48" rx="4"/>
+          <text x="175" y="585" text-anchor="middle">Push to Firebase</text>
+
+          <!-- next build column: x 450..720, center 585 -->
+          <rect class="box-new" x="450" y="44" width="270" height="56" rx="4"/>
+          <text x="585" y="68" text-anchor="middle">Brand + date range</text>
+          <text x="585" y="86" text-anchor="middle">delta from last scrape</text>
+
+          <rect class="box-new" x="450" y="136" width="270" height="64" rx="4"/>
+          <text x="585" y="162" text-anchor="middle">Update the dump</text>
+          <text class="sub-t" x="585" y="180" text-anchor="middle">merge delta, drop duplicate posts</text>
+
+          <rect class="box" x="450" y="236" width="270" height="48" rx="4"/>
+          <text x="585" y="265" text-anchor="middle">JSON dump</text>
+
+          <rect class="box" x="450" y="326" width="270" height="96" rx="4"/>
+          <text x="585" y="358" text-anchor="middle">Extract data for frontend</text>
+          <text class="sub-t" x="585" y="378" text-anchor="middle">LLM + facts, only where</text>
+          <text class="sub-t" x="585" y="396" text-anchor="middle">underlying posts changed</text>
+
+          <rect class="box" x="450" y="466" width="270" height="48" rx="4"/>
+          <text x="585" y="495" text-anchor="middle">Frontend build</text>
+
+          <rect class="box" x="450" y="556" width="270" height="48" rx="4"/>
+          <text x="585" y="585" text-anchor="middle">Push to Firebase</text>
+
+          <!-- vertical arrows, first column -->
+          <line class="edge" x1="175" y1="100" x2="175" y2="135" marker-end="url(#ah)"/>
+          <line class="edge" x1="175" y1="200" x2="175" y2="235" marker-end="url(#ah)"/>
+          <line class="edge" x1="175" y1="284" x2="175" y2="325" marker-end="url(#ah)"/>
+          <line class="edge" x1="175" y1="422" x2="175" y2="465" marker-end="url(#ah)"/>
+          <line class="edge" x1="175" y1="514" x2="175" y2="555" marker-end="url(#ah)"/>
+          <!-- vertical arrows, second column -->
+          <line class="edge" x1="585" y1="100" x2="585" y2="135" marker-end="url(#ah)"/>
+          <line class="edge" x1="585" y1="200" x2="585" y2="235" marker-end="url(#ah)"/>
+          <line class="edge" x1="585" y1="284" x2="585" y2="325" marker-end="url(#ah)"/>
+          <line class="edge" x1="585" y1="422" x2="585" y2="465" marker-end="url(#ah)"/>
+          <line class="edge" x1="585" y1="514" x2="585" y2="555" marker-end="url(#ah)"/>
+
+          <!-- cross link: first dump feeds the update step -->
+          <polyline class="edge-link" points="310,260 380,260 380,168 449,168" marker-end="url(#ah-a)"/>
+          <text class="link-label" x="316" y="252">last dump</text>
+        </svg>
+      </div>
+      <figcaption>The first three boxes (dashed) are already done: the Lazy Susy dump exists, so work starts at extraction. Every later build takes the previous JSON dump, merges the delta into it, and runs the same extraction, build and deploy steps.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Tasks</h2>
+    <div class="progress"><span id="count">0 / 0 done</span><div class="bar"><i id="fill"></i></div></div>
+    <div id="phases"></div>
+  </section>
+
+</main>
+
+<script>
+var PHASES = [
+  { title: "Delivery plan", note: "The Lazy Susy dump already exists, so work starts at the frontend and extraction.", tasks: [
+    { id: "p1", tag: "Frontend", eta: "Mon 26 Oct, first half", t: "Frontend development + deployment", sub: ["Build the frontend.", "Push the application to Firebase."] },
+    { id: "p2", tag: "Extract", eta: "Tue 27 Oct, EOD", t: "Data extraction pipeline development", sub: ["Start from the existing Lazy Susy dump (data/david-pieris).", "Restructure with the LLM and generate the facts.", "Validate the output against the schema the frontend expects."] },
+    { id: "p3", tag: "Update", eta: "Wed 28 Oct, EOD", t: "Update pipeline", sub: ["TikTok integration.", "Update logic: scripted next build, brand slug as a parameter, duplicate posts removed on merge, LLM re-run only for topics whose posts changed."] }
+  ]}
+];
+
+var saved = {};
+try { saved = JSON.parse(localStorage.getItem("intel-pipeline-tasks") || "{}"); } catch (e) {}
+
+var root = document.getElementById("phases");
+var n = 0;
+PHASES.forEach(function (p) {
+  var wrap = document.createElement("div");
+  wrap.className = "phase";
+  wrap.style.marginBottom = "16px";
+  var head = document.createElement("header");
+  head.innerHTML = "<h2></h2><p></p>";
+  head.querySelector("h2").textContent = p.title;
+  head.querySelector("p").textContent = p.note;
+  wrap.appendChild(head);
+  var ol = document.createElement("ol");
+  p.tasks.forEach(function (k) {
+    n++;
+    var li = document.createElement("li");
+    var lab = document.createElement("label");
+    var cb = document.createElement("input");
+    cb.type = "checkbox"; cb.id = "cb-" + k.id; cb.checked = !!saved[k.id];
+    var num = document.createElement("span"); num.className = "n"; num.textContent = String(n).padStart(2, "0");
+    var t = document.createElement("div"); t.className = "t";
+    var b = document.createElement("b"); b.textContent = k.t;
+    var tag = document.createElement("span"); tag.className = "tag"; tag.textContent = k.tag;
+    t.appendChild(b); t.appendChild(tag);
+    if (k.eta) { var eta = document.createElement("span"); eta.className = "tag eta"; eta.textContent = "ETA " + k.eta; t.appendChild(eta); }
+    if (k.sub.length) {
+      var ul = document.createElement("ul");
+      k.sub.forEach(function (s) { var x = document.createElement("li"); x.style.border = "0"; x.textContent = s; ul.appendChild(x); });
+      t.appendChild(ul);
+    }
+    lab.appendChild(cb); lab.appendChild(num); lab.appendChild(t);
+    li.appendChild(lab);
+    li.className = cb.checked ? "done" : "";
+    cb.addEventListener("change", function () {
+      saved[k.id] = cb.checked;
+      li.className = cb.checked ? "done" : "";
+      try { localStorage.setItem("intel-pipeline-tasks", JSON.stringify(saved)); } catch (e) {}
+      update();
+    });
+    ol.appendChild(li);
+  });
+  wrap.appendChild(ol);
+  root.appendChild(wrap);
+});
+
+function update() {
+  var all = root.querySelectorAll("input[type=checkbox]");
+  var done = root.querySelectorAll("input[type=checkbox]:checked").length;
+  document.getElementById("count").textContent = done + " / " + all.length + " done";
+  document.getElementById("fill").style.width = (all.length ? done / all.length * 100 : 0) + "%";
+}
+update();
+</script>

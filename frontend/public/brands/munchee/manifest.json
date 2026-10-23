@@ -1,0 +1,52 @@
+{
+  "schema": "forevate-brand/1",
+  "id": "munchee",
+  "name": "Munchee",
+  "organisation": "Ceylon Biscuits Limited (CBL)",
+  "market": "Sri Lanka",
+  "currency": "LKR",
+  "currency_prefix": "Rs. ",
+  "as_of": "2026-10-21",
+  "files": {
+    "data": "data.json",
+    "posts": "posts.jsonl",
+    "signals": "signals.json"
+  },
+  "sales_unit": "tonnes",
+  "sales_unit_short": "t",
+  "voice_labels": {
+    "organic": "Consumers and the public",
+    "brand_or_seller": "Brand and sellers",
+    "news": "News",
+    "recipe_or_creator_page": "Recipe and creator pages"
+  },
+  "organic_noun": "a consumer's",
+  "data_basis": "Lazy Suzy research export (10,172 scraped Facebook and TikTok posts, 137 live signals, 103 kept) plus public sources. Built 21 October 2026.",
+  "guide": "GUIDE.md",
+  "post_voice_labels": {
+    "organic": "Consumer / public",
+    "brand_or_seller": "Brand or seller",
+    "news": "News",
+    "recipe_or_creator_page": "Recipe / creator page"
+  },
+  "recipients": [
+    {
+      "name": "Brand Manager (placeholder)",
+      "email": "brand.manager@example.com",
+      "role": "Brand manager",
+      "digests": [
+        "daily",
+        "weekly"
+      ]
+    },
+    {
+      "name": "Category Lead (placeholder)",
+      "email": "category.lead@example.com",
+      "role": "Category lead",
+      "digests": [
+        "weekly"
+      ]
+    }
+  ],
+  "_recipients_note": "Registered contacts for this brand's email digests. Replace the placeholders; the mailer reads this list."
+}

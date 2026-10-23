@@ -1,0 +1,50 @@
+{
+  "schema": "forevate-brand/1",
+  "id": "bajaj",
+  "name": "Bajaj",
+  "organisation": "David Pieris Motor Company (DPMC)",
+  "market": "Sri Lanka",
+  "currency": "LKR",
+  "currency_prefix": "Rs. ",
+  "as_of": "2026-10-21",
+  "files": {
+    "data": "data.json",
+    "posts": "posts.jsonl",
+    "signals": "signals.json"
+  },
+  "sales_unit": "units",
+  "real_anchor": "published registrations",
+  "voice_labels": {
+    "organic": "Riders and the public",
+    "dealer_or_brand": "Dealers and brand pages",
+    "news": "News"
+  },
+  "post_voice_labels": {
+    "organic": "Rider / public",
+    "dealer_or_brand": "Dealer or brand",
+    "news": "News"
+  },
+  "organic_noun": "a rider's",
+  "data_basis": "Lazy Suzy research export (8,532 scraped Facebook and TikTok posts, 104 live signals, 77 kept) plus public sources. Built 21 October 2026.",
+  "guide": "GUIDE.md",
+  "recipients": [
+    {
+      "name": "Brand Manager (placeholder)",
+      "email": "brand.manager@example.com",
+      "role": "Brand manager",
+      "digests": [
+        "daily",
+        "weekly"
+      ]
+    },
+    {
+      "name": "Marketing Head (placeholder)",
+      "email": "marketing.head@example.com",
+      "role": "Marketing head",
+      "digests": [
+        "weekly"
+      ]
+    }
+  ],
+  "_recipients_note": "Registered contacts for this brand's email digests. Replace the placeholders; the mailer reads this list."
+}
