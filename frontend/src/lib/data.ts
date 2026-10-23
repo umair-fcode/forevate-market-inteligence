@@ -61,3 +61,26 @@ export async function loadBrand(b: BrandEntry): Promise<BrandData> {
 
   return { brand: Object.assign({}, b, manifest), D: data, SIG, SIGID, POSTS, POSTID }
 }
+
+/** Build an in-browser brand from picked files (original filesToBrand, line 1136). */
+export async function filesToBrand(files: File[]): Promise<BrandEntry> {
+  const got: { manifest?: Manifest; posts?: string; signals?: Json; data?: Json } = {}
+  for (const f of files) {
+    const t = await f.text()
+    if (/manifest\.json$/i.test(f.name)) got.manifest = JSON.parse(t)
+    else if (/\.jsonl$/i.test(f.name)) got.posts = t
+    else if (/signal/i.test(f.name)) got.signals = JSON.parse(t)
+    else got.data = JSON.parse(t)
+  }
+  if (!got.data) throw new Error('A data.json with one key per tab is required.')
+  const m = got.manifest || {}
+  const name = m.name || got.data.global?.brand || got.data.settings?.brand?.name || 'New brand'
+  return {
+    id: 'local-' + Date.now(),
+    name,
+    organisation: m.organisation || got.data.settings?.brand?.distributor || '',
+    market: m.market || got.data.global?.market || '',
+    status: 'local',
+    inline: { data: got.data, posts: got.posts || '', signals: got.signals?.signals || got.signals || [], manifest: m },
+  }
+}

@@ -70,6 +70,7 @@ interface Ctx extends ViewState {
   error: string | null
   patch: (p: Partial<ViewState>) => void
   go: (tab: string, sub?: number, extra?: Partial<ViewState>) => void
+  goInsight: (id: string) => void
   setFilter: (k: keyof Filters, v: string) => void
   clearFilters: () => void
   selectBrand: (b: BrandEntry) => Promise<void>
@@ -149,6 +150,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setView((v) => ({ ...v, tab, sub, ...extra }))
   }, [])
 
+  const goInsight = useCallback((id: string) => {
+    store.set("tab", "insights")
+    setView((v) => ({ ...v, tab: "insights", sub: 1, openIns: id, openInsights: new Set(v.openInsights).add(id) }))
+  }, [])
+
   const setFilter = useCallback((k: keyof Filters, v: string) => setView((s) => ({ ...s, f: { ...s.f, [k]: v } })), [])
   const clearFilters = useCallback(() => setView((s) => ({ ...s, f: { ...EMPTY_FILTERS } })), [])
 
@@ -165,6 +171,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     error,
     patch,
     go,
+    goInsight,
     setFilter,
     clearFilters,
     selectBrand,
