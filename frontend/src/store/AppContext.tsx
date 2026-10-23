@@ -43,6 +43,8 @@ interface ViewState {
   /** Selected column of the two Demand charts (null = default). */
   demandMonth: number | null
   demandWeek: number | null
+  /** Research-partner briefs drafted this session. */
+  partnerReqs: Json[]
 }
 
 const freshBrandView = (D: Json): Partial<ViewState> => ({
@@ -77,6 +79,8 @@ interface Ctx extends ViewState {
   error: string | null
   patch: (p: Partial<ViewState>) => void
   go: (tab: string, sub?: number, extra?: Partial<ViewState>) => void
+  /** Functional update for the Deep Research conversation. */
+  updateChat: (fn: (c: Json[]) => Json[]) => void
   goInsight: (id: string) => void
   setFilter: (k: keyof Filters, v: string) => void
   clearFilters: () => void
@@ -111,6 +115,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     draft: '',
     demandMonth: null,
     demandWeek: null,
+    partnerReqs: [],
   }))
 
   const patch = useCallback((p: Partial<ViewState>) => setView((v) => ({ ...v, ...p })), [])
@@ -160,6 +165,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setView((v) => ({ ...v, tab, sub, ...extra }))
   }, [])
 
+  const updateChat = useCallback((fn: (c: Json[]) => Json[]) => setView((v) => ({ ...v, chat: fn(v.chat) })), [])
+
   const goInsight = useCallback((id: string) => {
     store.set("tab", "insights")
     setView((v) => ({ ...v, tab: "insights", sub: 1, openIns: id, openInsights: new Set(v.openInsights).add(id) }))
@@ -181,6 +188,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     error,
     patch,
     go,
+    updateChat,
     goInsight,
     setFilter,
     clearFilters,

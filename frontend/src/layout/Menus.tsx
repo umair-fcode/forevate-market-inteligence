@@ -5,6 +5,7 @@ import { dfmt } from '../lib/format'
 import { useApp } from '../store/AppContext'
 import { useUI } from '../store/UIContext'
 import { AddBrandModal } from './AddBrandModal'
+import { DigestModal } from './DigestModal'
 import { Popover } from './Popover'
 
 type MenuProps = { anchor: RefObject<HTMLElement | null>; onClose: () => void }
@@ -47,7 +48,7 @@ export function ProfileMenu({ anchor, onClose }: MenuProps) {
 
 export function AlertsMenu({ anchor, onClose }: MenuProps) {
   const { data, goInsight } = useApp()
-  const { toast } = useUI()
+  const { openModal } = useUI()
   const alerts = ((data?.D?.global?.alerts || []) as Record<string, string>[])
     .slice()
     .sort((a, b) => (b.date || '').localeCompare(a.date || ''))
@@ -76,8 +77,8 @@ export function AlertsMenu({ anchor, onClose }: MenuProps) {
       <div className="popfoot">
         <div className="hd" style={{ paddingTop: 10 }}>Email digests</div>
         <div className="popbtns">
-          <button className="btn sm" onClick={() => { onClose(); toast('Email digests arrive in a later step') }}><Icon name="mail" /> Send today's digest</button>
-          <button className="btn sm" onClick={() => { onClose(); toast('Email digests arrive in a later step') }}><Icon name="mail" /> Send last week's digest</button>
+          <button className="btn sm" onClick={() => { onClose(); openModal(<DigestModal period="daily" />, { maxWidth: 760 }) }}><Icon name="mail" /> Send today's digest</button>
+          <button className="btn sm" onClick={() => { onClose(); openModal(<DigestModal period="weekly" />, { maxWidth: 760 }) }}><Icon name="mail" /> Send last week's digest</button>
         </div>
         <div className="tiny muted" style={{ padding: '4px 10px 6px' }}>
           Compiles the email from this brand's data for {n} registered contact{n === 1 ? '' : 's'}.

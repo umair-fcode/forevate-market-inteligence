@@ -3,7 +3,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState, ty
 
 interface UI {
   toast: (msg: string) => void
-  openModal: (node: ReactNode) => void
+  openModal: (node: ReactNode, opts?: { maxWidth?: number }) => void
   closeModal: () => void
 }
 
@@ -13,6 +13,7 @@ export function UIProvider({ children }: { children: ReactNode }) {
   const [msg, setMsg] = useState('')
   const [on, setOn] = useState(false)
   const [modal, setModal] = useState<ReactNode>(null)
+  const [maxWidth, setMaxWidth] = useState<number | undefined>()
   const timer = useRef<number>(0)
 
   const toast = useCallback((m: string) => {
@@ -21,7 +22,10 @@ export function UIProvider({ children }: { children: ReactNode }) {
     window.clearTimeout(timer.current)
     timer.current = window.setTimeout(() => setOn(false), 2600)
   }, [])
-  const openModal = useCallback((node: ReactNode) => setModal(node), [])
+  const openModal = useCallback((node: ReactNode, opts?: { maxWidth?: number }) => {
+    setMaxWidth(opts?.maxWidth)
+    setModal(node)
+  }, [])
   const closeModal = useCallback(() => setModal(null), [])
 
   useEffect(() => {
@@ -40,7 +44,7 @@ export function UIProvider({ children }: { children: ReactNode }) {
       </div>
       {modal && (
         <div className="modal" id="modal" onClick={(e) => e.target === e.currentTarget && setModal(null)}>
-          <div className="box" role="dialog" aria-modal="true">
+          <div className="box" role="dialog" aria-modal="true" style={maxWidth ? { maxWidth } : undefined}>
             {modal}
           </div>
         </div>
