@@ -49,6 +49,14 @@ Every signal has three fields:
 7. A proposed age-40 limit for tuk drivers and a January public pay rise both affect Bajaj buyers. (INS-07)
 8. Lease borrowers celebrate the end of forced repossession, so easy-finance ads may put buyers off. (INS-08)
 
+## Brand-specific display settings
+
+Nothing brand-specific is hard-coded in the app; it reads these keys. Missing keys fall back to neutral wording or hide the block.
+
+In `manifest.json`: `currency_prefix`, `as_of`, `sales_unit`, `real_anchor`, plus `research_example` (placeholder question in Deep Research), `research_due_default` (default "needed by" date) and `integrations_hint` (closing sentence of the Integrations summary).
+
+In `data.json`: `my_market.key_number_labels` (`{key: [label, unit, source type]}` for each series in `key_numbers`), `my_personas.persona_fields` (`[[label, key, suffix?]]` rows shown under "Who they are"), `my_competitors.registrations_monthly` with `registrations_meta` (`title`, `kpi_label`, `unit_noun`, `takeaway_template` using `{leader} {me} {month} {leader_n} {me_n}`) and `my_competitors.segment_share` (`label`, `share_pct`, `ours`, `rivals: [{name, value}]`, `source`).
+
 ## Caveats
 
 - Share of conversation is within a Bajaj-weighted scrape; show the trend, not the level.

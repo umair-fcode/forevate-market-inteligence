@@ -38,3 +38,7 @@ export const dshort = (s?: string | null): string => {
 export const cls = (s: unknown): string => String(s || '').replace(/[^A-Za-z]/g, '')
 
 export const cap = (s?: string | null): string => (s ? s.charAt(0).toUpperCase() + s.slice(1) : '')
+
+/** Fills {name} placeholders in a template string from a values map; unknown names are left as-is. */
+export const fillTemplate = (tpl: string, vals: Record<string, string | number>): string =>
+  tpl.replace(/\{(\w+)\}/g, (m, k) => (k in vals ? String(vals[k]) : m))

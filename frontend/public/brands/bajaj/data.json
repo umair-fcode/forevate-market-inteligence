@@ -5995,6 +5995,41 @@
   ]
  },
  "my_personas": {
+  "persona_fields": [
+   [
+    "Age",
+    "age"
+   ],
+   [
+    "Gender mix",
+    "gender_mix"
+   ],
+   [
+    "Household income",
+    "income_lkr_month",
+    " /month"
+   ],
+   [
+    "Household",
+    "household"
+   ],
+   [
+    "Lives",
+    "lives"
+   ],
+   [
+    "Vehicle now",
+    "vehicle_now"
+   ],
+   [
+    "Shops through",
+    "shops_through"
+   ],
+   [
+    "Buys at",
+    "buys_at"
+   ]
+  ],
   "so_what": "Hire drivers face the most pressure (fuel quota, 60% upfront, repossession worries) and see the most dealer ads. Young riders post about their bikes on their own. Working mothers and delivery riders are buying scooters and electric bikes where Bajaj has little presence.",
   "personas": [
    {
@@ -7172,6 +7207,12 @@
   "demo_note": "DEMO DATA. The export has no CRM, review-portal or call-centre data. Numbers, reviews and at-risk groups here are synthesized to show the view; links point to demo.forevate.ai. Replace with connected sources."
  },
  "my_competitors": {
+  "registrations_meta": {
+   "title": "New two-wheeler registrations",
+   "kpi_label": "Two-wheeler registrations",
+   "unit_noun": "two-wheelers",
+   "takeaway_template": "{leader} passed {me} in two-wheelers in {month} ({leader_n} vs {me_n}); {me} still leads motorcycles, Honda and TVS take scooters."
+  },
   "so_what": "TVS King has the most three-wheeler promotion and sells on one promise: a five-year warranty. Yadea gets the most attention for electric scooters, on running cost. Posts about a locally built electric three-wheeler (Milton) praise it for replacing imports, and Jaffna dealers are selling a Pulsar 220F that isn't on DPMC's published line-up.",
   "what_changed_this_week": [
    {
@@ -8241,7 +8282,7 @@
    "INS-03",
    "INS-06"
   ],
-  "registrations_2w_monthly": [
+  "registrations_monthly": [
    {
     "month": "2026-07",
     "Bajaj": 8096,
@@ -8261,16 +8302,33 @@
     "source": "R01"
    }
   ],
-  "passenger_3w_sep_2026": {
-   "Bajaj": 4278,
-   "Bajaj_share_pct": 82.2,
-   "TVS": 660,
-   "Piaggio": 166,
+  "segment_share": {
+   "label": "Passenger three-wheelers, Sep 2026",
+   "unit": "our share",
+   "share_pct": 82.2,
+   "ours": 4278,
+   "rivals": [
+    {
+     "name": "TVS",
+     "value": 660
+    },
+    {
+     "name": "Piaggio",
+     "value": 166
+    }
+   ],
    "real": true,
    "source": "R01"
   }
  },
  "my_market": {
+  "key_number_labels": {
+   "petrol_92_lkr": [
+    "Petrol 92",
+    "per litre",
+    "Fuel price"
+   ]
+  },
   "so_what": "Each monthly fuel price revision gets heavy attention, and people expect the government to protect them from rises. The 40% financing cap was reported as '60% upfront' in all three languages within a day. Flood warnings and the Akurana flood dominated October in the hills. Festival posts around Vesak and Poson came mostly from brands, and Christmas countdown posts have already started.",
   "conditions": [
    {

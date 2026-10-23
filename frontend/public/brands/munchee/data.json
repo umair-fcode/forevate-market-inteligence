@@ -6175,6 +6175,37 @@
   ]
  },
  "my_personas": {
+  "persona_fields": [
+   [
+    "Age",
+    "age"
+   ],
+   [
+    "Gender mix",
+    "gender_mix"
+   ],
+   [
+    "Household income",
+    "income_lkr_month",
+    " /month"
+   ],
+   [
+    "Household",
+    "household"
+   ],
+   [
+    "Lives",
+    "lives"
+   ],
+   [
+    "Shops through",
+    "shops_through"
+   ],
+   [
+    "Buys at",
+    "buys_at"
+   ]
+  ],
   "so_what": "Students and office workers post the most about what they eat and are price-conscious. Parents worry about lunch boxes and exams. Small-shop owners decide whether a new product is on the shelf, but rarely post.",
   "personas_setup": {
    "description": "Drafted from the brand's persona model and the export's scraping profiles (parents, office workers, students, health-conscious adults, small shops).",
@@ -8682,6 +8713,18 @@
   ]
  },
  "my_market": {
+  "key_number_labels": {
+   "wheat_flour_lkr_per_kg": [
+    "Wheat flour",
+    "per kg",
+    "Input cost"
+   ],
+   "sugar_levy_lkr_per_kg": [
+    "Sugar levy",
+    "per kg",
+    "Regulation"
+   ]
+  },
   "so_what": "Input costs are rising: flour +Rs. 17/kg in August, the sugar levy at Rs. 50/kg and food inflation at 8.7%. Shoppers check pack sizes on camera. This week brings heavy rain and power cuts, followed by Deepavali, the O/L exam and Christmas.",
   "conditions": [
    {

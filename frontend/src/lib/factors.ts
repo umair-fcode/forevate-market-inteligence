@@ -1,7 +1,7 @@
 /* Factors shaping a past month / a coming week on My Demand (original pastFactors / futureFactors, lines 1550-1571). */
-import { cap, compact, dfmt, dshort, fmt } from './format'
+import { cap, compact, dfmt, dshort } from './format'
 import { sigsWhere, srcsOfType } from './evidence'
-import { knDate, knMeta, type Lookups } from './lookups'
+import { knDate, type Lookups } from './lookups'
 import type { BrandData, Json } from './types'
 import type { EvidenceCtx } from '../store/EvidenceContext'
 
@@ -31,10 +31,10 @@ export function pastFactors(b: BrandData, L: Lookups, monthKey: string): Factor[
       (arr as Json[]).forEach((pp, i) => {
         if (i && inMonth(knDate(pp)) && pp.value !== (arr as Json[])[i - 1].value) {
           const dv = pp.value - (arr as Json[])[i - 1].value
-          const meta = knMeta(k)
+          const meta = L.knMeta(k)
           F.push({
             kind: 'Costs',
-            text: `${meta[0]} ${dv > 0 ? 'up' : 'down'} ${meta[1] === '%' ? Math.abs(dv).toFixed(1) + ' pts' : 'Rs. ' + fmt(Math.abs(dv))} to ${L.knFmt(k, pp.value)} (${dfmt(knDate(pp))})`,
+            text: `${meta[0]} ${dv > 0 ? 'up' : 'down'} ${meta[1] === '%' ? Math.abs(dv).toFixed(1) + ' pts' : L.money(Math.abs(dv))} to ${L.knFmt(k, pp.value)} (${dfmt(knDate(pp))})`,
             m: dv > 0 ? 'Cost pressure rises; price-sensitive SKUs and small-pack demand usually react first' : 'Relief on cost; watch whether buyers read it as enough',
             ev: { title: `${meta[0]} · ${dfmt(knDate(pp))}`, subtitle: `${L.knFmt(k, pp.value)} · published figure`, sources: pp.source ? [pp.source] : srcsOfType(b, meta[2]), signals: sigsWhere(b, (x) => x.market_tag === 'Costs').slice(0, 6), start: 'sources' },
             w: 80,

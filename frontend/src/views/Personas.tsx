@@ -28,9 +28,8 @@ export function PersonasView() {
   const sk: Json[] = (pg.how_they_see_us?.skus_in_their_conversation || []).filter((s: Json) => !f.sku || s.sku === f.sku)
   const sp: Json = pg.needs_and_spending || {}
   const setup = D.settings?.personas_setup || D.my_personas?.personas_setup || {}
-  const facts: [string, string, string?][] = [
-    ['Age', 'age'], ['Gender mix', 'gender_mix'], ['Household income', 'income_lkr_month', ' /month'], ['Household', 'household'],
-    ['Lives', 'lives'], ['Vehicle now', 'vehicle_now'], ['Shops through', 'shops_through'], ['Buys at', 'buys_at'],
+  const facts: [string, string, string?][] = P.persona_fields || [
+    ['Age', 'age'], ['Gender mix', 'gender_mix'], ['Household', 'household'], ['Lives', 'lives'], ['Shops through', 'shops_through'], ['Buys at', 'buys_at'],
   ]
   const pPosts = postsOfSignals(L, sigsWhere(data, (x) => (x.personas || []).includes(p.id)))
   const langs = Object.entries(lang).sort((a, b) => b[1] - a[1])

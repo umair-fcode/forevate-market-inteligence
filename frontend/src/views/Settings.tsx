@@ -95,7 +95,7 @@ export function SettingsView() {
       <Card
         title="Integrations"
         sub="Connected sources feed real numbers; demo sources show illustrative values until connected."
-        takeaway={`${connected} of ${ints.length} sources are connected. Connecting dealer sales and the CRM turns My Demand and My Customers into real data.`}
+        takeaway={`${connected} of ${ints.length} sources are connected.${data.brand.integrations_hint ? ' ' + data.brand.integrations_hint : ''}`}
       >
         <div className="scroll">
           <table className="tbl">

@@ -47,6 +47,14 @@ Every signal has three fields:
 7. Creators tell Maliban's founder story; Munchee's own history is not being told. (INS-07)
 8. Office snack swaps and hostel meals are sharing occasions with no Munchee sharing pack. (INS-08)
 
+## Brand-specific display settings
+
+Nothing brand-specific is hard-coded in the app; it reads these keys. Missing keys fall back to neutral wording or hide the block.
+
+In `manifest.json`: `currency_prefix`, `as_of`, `sales_unit`, `real_anchor`, plus `research_example` (placeholder question in Deep Research), `research_due_default` (default "needed by" date) and `integrations_hint` (closing sentence of the Integrations summary).
+
+In `data.json`: `my_market.key_number_labels` (`{key: [label, unit, source type]}` for each series in `key_numbers`), `my_personas.persona_fields` (`[[label, key, suffix?]]` rows shown under "Who they are"). Competitor registrations (`registrations_monthly`, `registrations_meta`) and `segment_share` are optional and only needed when public registration data exists.
+
 ## Caveats
 
 - Share of conversation is within a Munchee- and Maliban-weighted scrape; show the trend, not the level.

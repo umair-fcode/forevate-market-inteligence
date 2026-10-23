@@ -46,5 +46,8 @@
       ]
     }
   ],
-  "_recipients_note": "Registered contacts for this brand's email digests. Replace the placeholders; the mailer reads this list."
+  "_recipients_note": "Registered contacts for this brand's email digests. Replace the placeholders; the mailer reads this list.",
+  "research_example": "e.g. Why do first-time scooter buyers in Kandy pick Honda over Chetak?",
+  "research_due_default": "2026-12-15",
+  "integrations_hint": "Connecting dealer sales and the CRM turns My Demand and My Customers into real data."
 }

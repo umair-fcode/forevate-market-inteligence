@@ -23,6 +23,9 @@ export interface Manifest {
   currency?: string
   currency_prefix?: string
   as_of?: string
+  research_example?: string
+  research_due_default?: string
+  integrations_hint?: string
   files?: { data?: string; posts?: string; signals?: string }
   sales_unit?: string
   real_anchor?: string

@@ -3,10 +3,8 @@
 import { cap, fmt } from './format'
 import type { BrandData, Json, Post, Signal } from './types'
 
+/* Generic economic series; brand-specific labels come from D.my_market.key_number_labels. */
 const KN_LABELS: Record<string, [string, string, string]> = {
-  petrol_92_lkr: ['Petrol 92', 'per litre', 'Fuel price'],
-  wheat_flour_lkr_per_kg: ['Wheat flour', 'per kg', 'Input cost'],
-  sugar_levy_lkr_per_kg: ['Sugar levy', 'per kg', 'Regulation'],
   headline_inflation_pct: ['Inflation', '%', 'Economic data'],
   food_inflation_pct: ['Food inflation', '%', 'Economic data'],
   policy_rate_pct: ['Policy rate', '%', 'Economic data'],
@@ -22,14 +20,14 @@ const VOICE_DEFAULT: Record<string, string> = {
 
 const norm = (s: unknown) => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '')
 
-export function knMeta(k: string): [string, string, string] {
-  return (
+export function knMetaFor(labels: Record<string, [string, string, string]> = {}) {
+  return (k: string): [string, string, string] =>
+    labels[k] ||
     KN_LABELS[k] || [
       cap(k.replace(/_(lkr|pct)\b/g, '').replace(/_/g, ' ')),
       /pct$/.test(k) ? '%' : '',
       'Economic data',
     ]
-  )
 }
 
 export const salesOf = (m: Json) => m.total ?? m.tonnes ?? m.units
@@ -37,9 +35,10 @@ export const knDate = (pt: Json) => pt.date || pt.month || ''
 
 export function createLookups(b: BrandData) {
   const { D, brand } = b
+  const knMeta = knMetaFor(D?.my_market?.key_number_labels)
   const brandName = (): string => D?.global?.brand || brand?.name || ''
 
-  const money = (n: number | null | undefined) => (n == null ? '—' : (brand?.currency_prefix ?? 'Rs. ') + fmt(n))
+  const money = (n: number | null | undefined) => (n == null ? '—' : (brand?.currency_prefix ?? (brand?.currency ? brand.currency + ' ' : '')) + fmt(n))
   const skuName = (id: string): string => (D.settings?.skus || []).find((s: Json) => s.id === id)?.name || id
   const BK = () => norm(brandName())
   const brandKey = (obj: Json, suffix: string): string | null => {
@@ -58,7 +57,7 @@ export function createLookups(b: BrandData) {
   const voiceLabel = (t: string): string => (brand?.voice_labels || {})[t] || VOICE_DEFAULT[t] || String(t || '').replace(/_/g, ' ')
   const authorType = (t: string): string => (brand?.post_voice_labels || {})[t] || voiceLabel(t)
   const skuShort = (id: string): string =>
-    skuName(id).replace(new RegExp('^' + (brandName() || 'Bajaj') + '\\s+', 'i'), '')
+    brandName() ? skuName(id).replace(new RegExp('^' + norm(brandName()).split('').join('[^a-z0-9]*') + '\\s+', 'i'), '') : skuName(id)
   const personaName = (id: string): string => (D.my_personas?.personas || []).find((p: Json) => p.id === id)?.name || id
   const insight = (id: string): Json => (D.insights?.detailed_insights || []).find((i: Json) => i.id === id)
   const source = (id: string): Json => (D.sources || []).find((s: Json) => s.id === id)
@@ -85,6 +84,7 @@ export function createLookups(b: BrandData) {
     realAnchor: () => brand?.real_anchor || 'published figures',
     plain: () => !!D?._readme?.plain_language,
     meansLabel: () => `What it means for ${brandName() || 'us'}`,
+    knMeta,
     knFmt: (k: string, v: number) => (knMeta(k)[1] === '%' ? v + '%' : money(v)),
   }
 }

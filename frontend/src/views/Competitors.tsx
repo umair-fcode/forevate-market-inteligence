@@ -4,7 +4,7 @@ import { GroupedBars } from '../components/charts'
 import { FeelCell, FeelGauge } from '../components/feel'
 import { FEEL_TIP, feelCls, feelWord } from '../lib/feel'
 import { Card, ChartNote, EvBtn, Info, InsMini, Kpi, Legend, MeansBox, Pill, SoWhat, SrcLink, SrcLinks, Tag } from '../components/ui'
-import { compact, dfmt, dshort, fmt, pct, signed } from '../lib/format'
+import { compact, dfmt, fillTemplate, dshort, fmt, pct, signed } from '../lib/format'
 import type { Json } from '../lib/types'
 import { useApp } from '../store/AppContext'
 import { useEvidence } from '../store/EvidenceContext'
@@ -20,7 +20,9 @@ function HeadToHead({ K, me }: { K: Json; me: string }) {
   const { openEvidence } = useEvidence()
   if (!data || !L) return null
   const D = data.D
-  const reg: Json[] = K.registrations_2w_monthly || []
+  const reg: Json[] = K.registrations_monthly || []
+  const rm: Json = K.registrations_meta || {}
+  const unitNoun: string = rm.unit_noun || 'units'
   const last: Json = reg[reg.length - 1] || {}
   const brands = Object.keys(last).filter((k) => !['month', 'real', 'source'].includes(k))
   const h2h: Json = K.head_to_head || {}
@@ -128,16 +130,16 @@ function HeadToHead({ K, me }: { K: Json; me: string }) {
       <div className="grid g2">
         {reg.length ? (
           <Card
-            title="New two-wheeler registrations"
+            title={rm.title || 'New registrations'}
             right={<Tag kind="real" />}
             sub={regSub}
-            takeaway={`${rank2w[0]} passed ${me} in two-wheelers in ${dfmt(last.month)} (${fmt(last[rank2w[0]])} vs ${fmt(last[me])}); ${me} still leads motorcycles, Honda and TVS take scooters.`}
+            takeaway={fillTemplate(rm.takeaway_template || '{leader} leads in {month} with {leader_n}; {me} has {me_n}.', { leader: rank2w[0], me, month: dfmt(last.month), leader_n: fmt(last[rank2w[0]]), me_n: fmt(last[me]) })}
           >
             <GroupedBars
               groups={reg.map((r) => dfmt(r.month))}
               series={brands.map((b, i) => ({ name: b, v: reg.map((r) => r[b]), color: colors(i) }))}
               yFmt={compact}
-              barEv={(gi, si) => ({ title: `${brands[si]} · ${dfmt(reg[gi].month)}`, subtitle: `${fmt(reg[gi][brands[si]])} new two-wheelers registered · published figure`, sources: [reg[gi].source].filter(Boolean), start: 'sources' })}
+              barEv={(gi, si) => ({ title: `${brands[si]} · ${dfmt(reg[gi].month)}`, subtitle: `${fmt(reg[gi][brands[si]])} new ${unitNoun} registered · published figure`, sources: [reg[gi].source].filter(Boolean), start: 'sources' })}
             />
             <ChartNote text="Click a bar for the published source." />
             <Legend items={brands.map((b, i) => ({ name: b, color: colors(i) }))} />
@@ -190,11 +192,12 @@ function Changes({ K, me }: { K: Json; me: string }) {
   const { data, L, f } = useApp()
   if (!data || !L) return null
   const D = data.D
-  const reg: Json[] = K.registrations_2w_monthly || []
+  const reg: Json[] = K.registrations_monthly || []
+  const rm: Json = K.registrations_meta || {}
   const last: Json = reg[reg.length - 1] || {}
   const first: Json = reg[0] || {}
   const brands = Object.keys(last).filter((k) => !['month', 'real', 'source'].includes(k))
-  const p3: Json = K.passenger_3w_sep_2026 || {}
+  const seg: Json = K.segment_share
   const cols: Json[] = K.head_to_head?.columns || []
   const mine: Json = cols.find((c) => c.brand === me) || {}
   const changed: Json[] = (K.what_changed_this_week || []).filter((c: Json) => !f.area || (c.signal?.decision_area || L.sig(c.signal?.rank)?.decision_area) === f.area)
@@ -211,9 +214,9 @@ function Changes({ K, me }: { K: Json; me: string }) {
       <div className="kpis">
         {reg.length ? (
           <>
-            <Kpi label={`Two-wheeler registrations, ${dfmt(last.month)}`} value={fmt(last[me])} unit={`#${myRank} of ${brands.length}`} d={<>{rank2w[0]} leads with {fmt(last[rank2w[0]])} · <SrcLink id={last.source} /></>} tag={<Tag kind="real" />} />
+            <Kpi label={`${rm.kpi_label || 'Registrations'}, ${dfmt(last.month)}`} value={fmt(last[me])} unit={`#${myRank} of ${brands.length}`} d={<>{rank2w[0]} leads with {fmt(last[rank2w[0]])} · <SrcLink id={last.source} /></>} tag={<Tag kind="real" />} />
             <Kpi label={`Our registrations since ${dfmt(first.month)}`} value={pct(growth(me))} d={brands.filter((b) => b !== me).map((b) => `${b} ${pct(growth(b))}`).join(' · ')} tag={<Tag kind="real" />} />
-            <Kpi label="Passenger three-wheelers, Sep 2026" value={(p3.Bajaj_share_pct ?? '—') + '%'} unit="our share" d={<>{fmt(p3.Bajaj)} vs TVS {fmt(p3.TVS)} · Piaggio {fmt(p3.Piaggio)} · <SrcLink id={p3.source} /></>} tag={<Tag kind="real" />} />
+            {seg ? <Kpi label={seg.label} value={(seg.share_pct ?? '—') + '%'} unit={seg.unit || 'our share'} d={<>{fmt(seg.ours)} vs {(seg.rivals || []).map((r: Json) => `${r.name} ${fmt(r.value)}`).join(' · ')} · <SrcLink id={seg.source} /></>} tag={<Tag kind="real" />} /> : null}
           </>
         ) : (
           <>

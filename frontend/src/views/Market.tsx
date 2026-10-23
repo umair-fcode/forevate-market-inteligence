@@ -4,7 +4,7 @@ import { BarRows, Card, ChartNote, Delta, Dir, EvBtn, Info, InsLink, InsMini, Kp
 import { Icon } from '../components/Icon'
 import { sigsWhere, srcsOfType } from '../lib/evidence'
 import { cls, dfmt, dshort } from '../lib/format'
-import { knDate, knMeta } from '../lib/lookups'
+import { knDate } from '../lib/lookups'
 import type { Json } from '../lib/types'
 import { useApp } from '../store/AppContext'
 
@@ -12,6 +12,8 @@ export function MarketView() {
   const { data, L, f, marketTag: tagF, patch } = useApp()
   if (!data || !L) return null
   const D = data.D
+  const knMeta = L.knMeta
+  const cur = data.brand.currency_prefix ?? ''
   const M: Json = D.my_market || {}
   const toggleTag = (t: string) => patch({ marketTag: tagF === t ? '' : t })
 
@@ -39,8 +41,8 @@ export function MarketView() {
     signals: k === pk ? sigsWhere(data, (x) => x.market_tag === 'Costs').slice(0, 6) : [],
     start: 'sources' as const,
   })
-  const asOf: string = D._readme?.as_of || '2026-10-21'
-  const next = up.find((u) => u.date >= asOf)
+  const asOf: string = data.brand.as_of || D._readme?.as_of || ''
+  const next = asOf ? up.find((u) => u.date >= asOf) : undefined
   const days = next ? Math.round((new Date(next.date).getTime() - new Date(asOf).getTime()) / 864e5) : null
   const lastFood = kn.food_inflation_pct?.[kn.food_inflation_pct.length - 1]
 
@@ -117,11 +119,11 @@ export function MarketView() {
           {pk && petrol.length >= 2 && (
             <>
               <LineChart
-                series={[{ name: `${pm[0]}${pm[1] && pm[1] !== '%' ? ' (Rs. ' + pm[1] + ')' : ''}`, v: petrol.map((p) => p.value), color: 'var(--c1)' }]}
+                series={[{ name: `${pm[0]}${pm[1] && pm[1] !== '%' ? ' (' + cur + pm[1] + ')' : ''}`, v: petrol.map((p) => p.value), color: 'var(--c1)' }]}
                 labels={petrol.map((p) => dshort(knDate(p)))}
                 h={180}
                 yFmt={(v) => L.knFmt(pk, v)}
-                yLabel={`${pm[0]}${pm[1] === '%' ? ', %' : ', Rs. ' + pm[1]}`}
+                yLabel={`${pm[0]}${pm[1] === '%' ? ', %' : ', ' + cur + pm[1]}`}
                 pointEv={(i) => knEv(pk, petrol[i])}
               />
               <ChartNote text="Click a point for the published source." />
@@ -132,7 +134,7 @@ export function MarketView() {
               <div key={k}>
                 <div className="sect-title" style={{ marginBottom: 6 }}>
                   {knMeta(k)[0]}
-                  {knMeta(k)[1] && knMeta(k)[1] !== '%' ? <> <span className="muted" style={{ textTransform: 'none', letterSpacing: 0, fontWeight: 400 }}>Rs. {knMeta(k)[1]}</span></> : null}
+                  {knMeta(k)[1] && knMeta(k)[1] !== '%' ? <> <span className="muted" style={{ textTransform: 'none', letterSpacing: 0, fontWeight: 400 }}>{cur}{knMeta(k)[1]}</span></> : null}
                 </div>
                 <BarRows
                   rows={arr.map((i) => ({ l: dfmt(knDate(i)), v: i.value, vl: L.knFmt(k, i.value), cls: 'alt', tip: `${knMeta(k)[0]} ${dfmt(knDate(i))}: ${L.knFmt(k, i.value)}${i.note ? ' · ' + i.note : ''}`, ev: knEv(k, i) }))}

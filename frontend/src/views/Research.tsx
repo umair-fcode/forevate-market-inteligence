@@ -63,10 +63,10 @@ function Report({ r, q }: { r: Json; q?: string }) {
 }
 
 function Partners({ R }: { R: Json }) {
-  const { partnerReqs, patch } = useApp()
+  const { data, partnerReqs, patch } = useApp()
   const { toast } = useUI()
   const [title, setTitle] = useState('')
-  const [due, setDue] = useState('2026-12-15')
+  const [due, setDue] = useState(() => data?.brand.research_due_default || new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10))
   const rp: Json = R.research_partners || {}
   const reqs: Json[] = (rp.requests || []).concat(partnerReqs)
   const submit = (e: FormEvent) => {
@@ -100,7 +100,7 @@ function Partners({ R }: { R: Json }) {
       <Card title="Brief a research partner" sub="A partner is matched to the brief; the request then appears in the table above.">
         <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           <label className="small muted" htmlFor="brief-title">What do you need to learn?</label>
-          <textarea id="brief-title" className="ask" style={{ minHeight: 72, width: '100%' }} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Why do first-time scooter buyers in Kandy pick Honda over Chetak?" />
+          <textarea id="brief-title" className="ask" style={{ minHeight: 72, width: '100%' }} value={title} onChange={(e) => setTitle(e.target.value)} placeholder={data?.brand.research_example || 'e.g. Why do first-time buyers choose a rival over us?'} />
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
             <label className="small muted" htmlFor="brief-due">Needed by</label>
             <input id="brief-due" type="date" className="sel" value={due} onChange={(e) => setDue(e.target.value)} />
