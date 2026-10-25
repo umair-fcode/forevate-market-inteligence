@@ -1,38 +1,21 @@
-/* Brand loading, ported from boot()/loadBrand() in the original (lines 893-930). */
-import type { BrandData, BrandEntry, Json, Manifest, Post, Signal } from './types'
+/* Brand loading, ported from boot()/loadBrand() in the original (lines 893-930).
+   The build ships one brand, in the fixed folder /brand/. */
+import type { BrandData, Json, Manifest, Post, Signal } from './types'
 
-const getJson = (url: string) => fetch(url).then((r) => r.json())
+const BRAND_DIR = '/brand'
+const getJson = (url: string) => fetch(url).then((r) => {
+  if (!r.ok) throw new Error(`Could not load ${url} (${r.status})`)
+  return r.json()
+})
 
-export async function fetchBrandIndex(): Promise<{ brands: BrandEntry[]; dashboardUrl: string }> {
-  try {
-    const idx = await getJson('/brands/index.json')
-    return { brands: idx.brands || [], dashboardUrl: idx.dashboard_url || location.href.split('#')[0] }
-  } catch {
-    return { brands: [], dashboardUrl: location.href.split('#')[0] }
-  }
-}
-
-export async function loadBrand(b: BrandEntry): Promise<BrandData> {
-  let data: Json
-  let sigs: Json[] = []
-  let postsTxt = ''
-  let manifest: Manifest = {}
-
-  if (b.inline) {
-    data = b.inline.data
-    sigs = b.inline.signals || []
-    postsTxt = b.inline.posts || ''
-    manifest = b.inline.manifest || {}
-  } else {
-    const base = '/' + b.folder
-    manifest = await getJson(`${base}/manifest.json`)
-    const f = manifest.files || {}
-    ;[data, sigs, postsTxt] = await Promise.all([
-      getJson(`${base}/${f.data || 'data.json'}`),
-      f.signals ? getJson(`${base}/${f.signals}`).then((j) => j.signals || j).catch(() => []) : [],
-      f.posts ? fetch(`${base}/${f.posts}`).then((r) => r.text()).catch(() => '') : '',
-    ])
-  }
+export async function loadBrand(): Promise<BrandData> {
+  const manifest: Manifest = await getJson(`${BRAND_DIR}/manifest.json`)
+  const f = manifest.files || {}
+  const [data, sigs, postsTxt]: [Json, Json[], string] = await Promise.all([
+    getJson(`${BRAND_DIR}/${f.data || 'data.json'}`),
+    f.signals ? getJson(`${BRAND_DIR}/${f.signals}`).then((j) => j.signals || j).catch(() => []) : [],
+    f.posts ? fetch(`${BRAND_DIR}/${f.posts}`).then((r) => r.text()).catch(() => '') : '',
+  ])
 
   const SIG: BrandData['SIG'] = {}
   const SIGID: BrandData['SIGID'] = {}
@@ -59,28 +42,6 @@ export async function loadBrand(b: BrandEntry): Promise<BrandData> {
     }
   })
 
-  return { brand: Object.assign({}, b, manifest), D: data, SIG, SIGID, POSTS, POSTID }
-}
-
-/** Build an in-browser brand from picked files (original filesToBrand, line 1136). */
-export async function filesToBrand(files: File[]): Promise<BrandEntry> {
-  const got: { manifest?: Manifest; posts?: string; signals?: Json; data?: Json } = {}
-  for (const f of files) {
-    const t = await f.text()
-    if (/manifest\.json$/i.test(f.name)) got.manifest = JSON.parse(t)
-    else if (/\.jsonl$/i.test(f.name)) got.posts = t
-    else if (/signal/i.test(f.name)) got.signals = JSON.parse(t)
-    else got.data = JSON.parse(t)
-  }
-  if (!got.data) throw new Error('A data.json with one key per tab is required.')
-  const m = got.manifest || {}
-  const name = m.name || got.data.global?.brand || got.data.settings?.brand?.name || 'New brand'
-  return {
-    id: 'local-' + Date.now(),
-    name,
-    organisation: m.organisation || got.data.settings?.brand?.distributor || '',
-    market: m.market || got.data.global?.market || '',
-    status: 'local',
-    inline: { data: got.data, posts: got.posts || '', signals: got.signals?.signals || got.signals || [], manifest: m },
-  }
+  const name = manifest.name || data.global?.brand || data.settings?.brand?.name || 'Brand'
+  return { brand: { ...manifest, id: manifest.id || 'brand', name }, D: data, SIG, SIGID, POSTS, POSTID }
 }

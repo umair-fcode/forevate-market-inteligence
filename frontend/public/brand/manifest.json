@@ -4,6 +4,7 @@
   "name": "Bajaj",
   "organisation": "David Pieris Motor Company (DPMC)",
   "market": "Sri Lanka",
+  "category": "Two- and three-wheelers",
   "currency": "LKR",
   "currency_prefix": "Rs. ",
   "as_of": "2026-10-21",
@@ -49,5 +50,7 @@
   "_recipients_note": "Registered contacts for this brand's email digests. Replace the placeholders; the mailer reads this list.",
   "research_example": "e.g. Why do first-time scooter buyers in Kandy pick Honda over Chetak?",
   "research_due_default": "2026-12-15",
-  "integrations_hint": "Connecting dealer sales and the CRM turns My Demand and My Customers into real data."
+  "integrations_hint": "Connecting dealer sales and the CRM turns My Demand and My Customers into real data.",
+  "dashboard_url": "https://claude.ai/artifact/DSXJW1d2n2anv7RPmLJ8Fe",
+  "_dashboard_url_note": "Used as the login link in email digests; deep links append #insights, #brand, #competitors, #market, #demand."
 }

@@ -1,11 +1,11 @@
 /* App state, replacing the original global `state` object. Per-viewer conveniences persist in localStorage under 'fv.*'. */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { fetchBrandIndex, loadBrand } from '../lib/data'
+import { loadBrand } from '../lib/data'
 import { store } from '../lib/storage'
 import { EMPTY_FILTERS } from '../lib/filters'
 import { createLookups, type Lookups } from '../lib/lookups'
 import { ALL_TABS } from '../lib/tabs'
-import type { BrandData, BrandEntry, Filters, Json } from '../lib/types'
+import type { BrandData, Filters, Json } from '../lib/types'
 
 interface ViewState {
   tab: string
@@ -52,14 +52,12 @@ function initialTab(): string {
 }
 
 interface Ctx extends ViewState {
-  brands: BrandEntry[]
   dashboardUrl: string
-  /** Loaded brand, or null while loading / when no brand is onboarded. */
+  /** The brand this build ships, or null while loading / if its files are missing. */
   data: BrandData | null
   /** Lookups for the loaded brand (null with `data`). */
   L: Lookups | null
   booting: boolean
-  loading: boolean
   error: string | null
   patch: (p: Partial<ViewState>) => void
   go: (tab: string, sub?: number, extra?: Partial<ViewState>) => void
@@ -68,18 +66,14 @@ interface Ctx extends ViewState {
   goInsight: (id: string) => void
   setFilter: (k: keyof Filters, v: string) => void
   clearFilters: () => void
-  selectBrand: (b: BrandEntry) => Promise<void>
-  addBrand: (b: BrandEntry) => Promise<void>
 }
 
 const AppCtx = createContext<Ctx | null>(null)
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [brands, setBrands] = useState<BrandEntry[]>([])
   const [dashboardUrl, setDashboardUrl] = useState('')
   const [data, setData] = useState<BrandData | null>(null)
   const [booting, setBooting] = useState(true)
-  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [view, setView] = useState<ViewState>(() => ({
     tab: initialTab(),
@@ -104,45 +98,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const patch = useCallback((p: Partial<ViewState>) => setView((v) => ({ ...v, ...p })), [])
 
-  const selectBrand = useCallback(async (b: BrandEntry) => {
-    setLoading(true)
-    setError(null)
-    try {
-      const loaded = await loadBrand(b)
-      setData(loaded)
-      setView((v) => ({ ...v, ...freshBrandView(loaded.D) }))
-      store.set('brand', b.id)
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e))
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  const addBrand = useCallback(
-    async (b: BrandEntry) => {
-      setBrands((bs) => [...bs.filter((x) => x.id !== b.id), b])
-      await selectBrand(b)
-    },
-    [selectBrand],
-  )
-
   useEffect(() => {
     let alive = true
-    ;(async () => {
-      const idx = await fetchBrandIndex()
-      if (!alive) return
-      setBrands(idx.brands)
-      setDashboardUrl(idx.dashboardUrl)
-      const savedBrand = store.get<string>('brand')
-      const b = idx.brands.find((x) => x.id === savedBrand) || idx.brands[0]
-      if (b) await selectBrand(b)
-      if (alive) setBooting(false)
-    })()
+    loadBrand()
+      .then((loaded) => {
+        if (!alive) return
+        setData(loaded)
+        setDashboardUrl(loaded.brand.dashboard_url || location.href.split('#')[0])
+        setView((v) => ({ ...v, ...freshBrandView(loaded.D) }))
+      })
+      .catch((e) => alive && setError(e instanceof Error ? e.message : String(e)))
+      .finally(() => alive && setBooting(false))
     return () => {
       alive = false
     }
-  }, [selectBrand])
+  }, [])
 
   const go = useCallback((tab: string, sub = 0, extra: Partial<ViewState> = {}) => {
     store.set('tab', tab)
@@ -163,12 +133,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const value: Ctx = {
     ...view,
-    brands,
     dashboardUrl,
     data,
     L,
     booting,
-    loading,
     error,
     patch,
     go,
@@ -176,8 +144,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     goInsight,
     setFilter,
     clearFilters,
-    selectBrand,
-    addBrand,
   }
   return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>
 }

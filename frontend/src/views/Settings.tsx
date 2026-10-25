@@ -9,7 +9,7 @@ import { useApp } from '../store/AppContext'
 const BL: Record<string, string> = { distributor: 'Distributor / organisation', company: 'Company', touchpoints: 'Touchpoints', share_note: 'Market position' }
 
 export function SettingsView() {
-  const { data, L, sub, brands, go } = useApp()
+  const { data, L, sub, go } = useApp()
   if (!data || !L) return null
   const D = data.D
   const S: Json = D.settings || {}
@@ -119,18 +119,18 @@ export function SettingsView() {
     const roles: [string, string][] = [
       ['Owner', 'Everything, including brand setup, integrations and inviting users.'],
       ['Analyst', 'All tabs, can act on insights and run deep research.'],
-      ['Viewer', 'Read-only across the brands they are given.'],
+      ['Viewer', 'Read-only across the brand.'],
     ]
     return (
-      <Card title="Users & roles" sub="Who can see which brand. A user switches brands from the account menu at the top right.">
+      <Card title="Users & roles" sub="Who can see this brand and what they can do.">
         <div className="scroll">
           <table className="tbl">
-            <thead><tr><th>User</th><th>Role</th><th>Brands</th></tr></thead>
+            <thead><tr><th>User</th><th>Role</th><th>Brand</th></tr></thead>
             <tbody>
               <tr>
                 <td className="b">Fcode Labs Administration<div className="muted small">admin@fcodelabs.com</div></td>
                 <td><Pill kind="good">Owner</Pill></td>
-                <td>{brands.map((b, n) => <Fragment key={b.id}>{n > 0 ? ' ' : null}<span className="chip static">{b.name}</span></Fragment>)}</td>
+                <td><span className="chip static">{data.brand.name}</span></td>
               </tr>
             </tbody>
           </table>

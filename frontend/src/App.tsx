@@ -9,7 +9,7 @@ import { ALL_TABS } from './lib/tabs'
 import { useApp } from './store/AppContext'
 
 export default function App() {
-  const { tab, sub, booting, loading, error, data, go } = useApp()
+  const { tab, sub, booting, error, data, go } = useApp()
 
   /* Deep links such as #insights or #market (used by the email digests). */
   useEffect(() => {
@@ -29,9 +29,9 @@ export default function App() {
   const t = ALL_TABS.find((x) => x.id === tab)!
 
   let content
-  if (booting || loading) content = <div className="loading"><div className="spin" /><div>Loading brand data…</div></div>
+  if (booting) content = <div className="loading"><div className="spin" /><div>Loading brand data…</div></div>
   else if (error) content = <div className="empty">Could not load the brand: {error}</div>
-  else if (!data) content = <div className="empty">No brand is onboarded yet. Use the brand menu to add one.</div>
+  else if (!data) content = <div className="empty">No brand data found. Place the brand files in the public/brand folder.</div>
   else if (VIEWS[tab]) { const View = VIEWS[tab]; content = <ViewBoundary key={`${data.brand.id}-${tab}`}><View /></ViewBoundary> }
   else content = <div className="empty">{t.name}{t.subs[sub] ? ` · ${t.subs[sub]}` : ''} — coming in a later step.</div>
 

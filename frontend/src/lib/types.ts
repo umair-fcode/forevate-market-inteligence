@@ -3,23 +3,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type Json = any
 
-export interface BrandEntry {
-  id: string
-  name: string
-  organisation?: string
-  market?: string
-  category?: string
-  folder?: string
-  status?: string
-  /** Brands added in-browser carry their files inline instead of a folder. */
-  inline?: { data: Json; signals?: Json[]; posts?: string; manifest?: Json }
-}
-
 export interface Manifest {
   id?: string
   name?: string
   organisation?: string
   market?: string
+  category?: string
+  dashboard_url?: string
   currency?: string
   currency_prefix?: string
   as_of?: string
@@ -43,7 +33,7 @@ export type Post = Record<string, Json> & { url: string; id?: string }
 
 /** Everything loaded for the selected brand. */
 export interface BrandData {
-  brand: BrandEntry & Manifest
+  brand: Manifest & { id: string; name: string }
   D: Json
   SIG: Record<string | number, Signal>
   SIGID: Record<string, Signal>

@@ -61,7 +61,7 @@ export function Topbar() {
           <Icon name="bell" />
           {hasRisk && <span className="dot" />}
         </button>
-        <button ref={profRef} className="profile" id="profile" aria-haspopup="menu" aria-expanded={menu === 'profile'} data-tip="Your account and brands" onClick={() => toggleMenu('profile')}>
+        <button ref={profRef} className="profile" id="profile" aria-haspopup="menu" aria-expanded={menu === 'profile'} data-tip="Your account" onClick={() => toggleMenu('profile')}>
           <span className="av">FA</span>
           <span className="t">
             <b>Fcode Labs Admin</b>
