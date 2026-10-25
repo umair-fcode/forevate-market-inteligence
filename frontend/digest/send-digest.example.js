@@ -26,7 +26,7 @@ const asOf = opt('as-of', null);                             // defaults to the 
 const outDir = opt('out', null);
 const send = !!opt('send', false);
 
-async function deliver({ to, subject, html, text }) {
+async function deliver({ to, subject, html, text: _text }) {
   // ---- Replace this with your provider. Example with nodemailer:
   // const nodemailer = require('nodemailer');
   // const t = nodemailer.createTransport(process.env.SMTP_URL);

@@ -33,7 +33,7 @@ export function ProfileMenu({ anchor, onClose }: MenuProps) {
       )}
       <div style={{ borderTop: '1px solid var(--line)' }} />
       <button className="it" role="menuitem" onClick={() => { onClose(); go('settings', 5) }}>
-        <span className="t"><b>Users &amp; roles</b><span>Manage who can see which brand</span></span>
+        <span className="t"><b>Users &amp; roles</b><span>Manage who can see this brand</span></span>
       </button>
     </Popover>
   )
