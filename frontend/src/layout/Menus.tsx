@@ -4,15 +4,13 @@ import { Pill } from '../components/bits'
 import { dfmt } from '../lib/format'
 import { useApp } from '../store/AppContext'
 import { useUI } from '../store/UIContext'
-import { AddBrandModal } from './AddBrandModal'
 import { DigestModal } from './DigestModal'
 import { Popover } from './Popover'
 
 type MenuProps = { anchor: RefObject<HTMLElement | null>; onClose: () => void }
 
 export function ProfileMenu({ anchor, onClose }: MenuProps) {
-  const { brands, data, selectBrand, go } = useApp()
-  const { openModal } = useUI()
+  const { data, go } = useApp()
   return (
     <Popover anchor={anchor} onClose={onClose}>
       <div style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '12px 10px 10px' }}>
@@ -23,21 +21,16 @@ export function ProfileMenu({ anchor, onClose }: MenuProps) {
         </div>
       </div>
       <div style={{ borderTop: '1px solid var(--line)' }} />
-      <div className="hd">Brands you can open</div>
-      {brands.map((b) => (
-        <button key={b.id} className="it" role="menuitem" onClick={() => { onClose(); selectBrand(b) }}>
-          <span className="av">{(b.name || '?').slice(0, 1).toUpperCase()}</span>
+      <div className="hd">Brand</div>
+      {data && (
+        <div className="it" style={{ cursor: 'default' }}>
+          <span className="av">{(data.brand.name || '?').slice(0, 1).toUpperCase()}</span>
           <span className="t">
-            <b>{b.name}{b.market ? ' · ' + b.market : ''}</b>
-            <span>{b.organisation || ''}{b.status === 'live' ? ' · live data' : b.status === 'local' ? ' · loaded from your files' : ''}</span>
+            <b>{data.brand.name}{data.brand.market ? ' · ' + data.brand.market : ''}</b>
+            <span>{data.brand.organisation || ''}</span>
           </span>
-          {data?.brand.id === b.id && <span style={{ color: 'var(--accent)' }}><Icon name="check" size={16} /></span>}
-        </button>
-      ))}
-      <button className="it add" role="menuitem" onClick={() => { onClose(); openModal(<AddBrandModal />) }}>
-        <span className="av"><Icon name="plus" size={16} /></span>
-        <span className="t"><b>Add a brand</b><span>Onboard another brand with the same set of files</span></span>
-      </button>
+        </div>
+      )}
       <div style={{ borderTop: '1px solid var(--line)' }} />
       <button className="it" role="menuitem" onClick={() => { onClose(); go('settings', 5) }}>
         <span className="t"><b>Users &amp; roles</b><span>Manage who can see which brand</span></span>

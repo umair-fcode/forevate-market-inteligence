@@ -16,9 +16,8 @@ digest/
   digest.js                 the builder + renderer (browser and Node, no dependencies)
   send-digest.example.js    reference mailer: loads a brand folder, builds, sends
   README.md                 this file
-brands/
-  index.json                brand list + dashboard_url (the login link in every email)
-  <brand>/manifest.json     recipients[] for that brand (name, email, role, digests)
+public/brand/
+  manifest.json             dashboard_url (the login link in every email) and recipients[] (name, email, role, digests)
 ```
 
 The dashboard embeds `digest.js` verbatim (between the `@@DIGEST-START@@` / `@@DIGEST-END@@` markers in `forevate.html`), so the preview a brand manager sees from the alerts pane is byte-for-byte what the mailer produces.
@@ -31,9 +30,9 @@ const { build, renderHtml, renderText } = require('./digest.js');
 const model = build(data, {
   period: 'daily' | 'weekly',
   asOf: '2026-10-21',          // the run date; defaults to data._readme.as_of
-  brand: manifest,             // brands/<id>/manifest.json
-  signals: signalsJson.signals,// brands/<id>/signals.json (gives each signal its latest evidence date)
-  dashboardUrl: index.dashboard_url,
+  brand: manifest,             // public/brand/manifest.json
+  signals: signalsJson.signals,// public/brand/signals.json (gives each signal its latest evidence date)
+  dashboardUrl: manifest.dashboard_url,
   recipients: manifest.recipients,
   lookbackDays: 1              // daily only; stretches to 3 automatically when quiet
 });
@@ -63,13 +62,13 @@ Insights are ranked by status (Risk 3, Watch 2, Opportunity 1.6) × impact (High
 
 ## Wiring it into the backend
 
-1. Keep the brand folders where the dashboard reads them (or copy them to the mailer).
+1. Keep the brand folder where the dashboard reads it (or copy it to the mailer).
 2. Replace `deliver()` in `send-digest.example.js` with your provider.
 3. Schedule two jobs per brand (Asia/Colombo): daily at 18:00, weekly Monday 08:00. Pass the real date as `asOf`.
 4. The "Send today's digest" / "Send last week's digest" buttons in the dashboard's alerts pane currently build a preview and offer a download. To make them send, point them at an endpoint such as `POST /api/digests {brand, period, asOf}` that runs the same `build` + `renderHtml` server-side and mails `manifest.recipients`.
-5. Deep links in the email use `dashboard_url` from `brands/index.json` plus a hash (`#insights`, `#brand`, `#competitors`, `#market`, `#demand`). Change `dashboard_url` when the dashboard moves.
+5. Deep links in the email use `dashboard_url` from `public/brand/manifest.json` plus a hash (`#insights`, `#brand`, `#competitors`, `#market`, `#demand`). Change `dashboard_url` when the dashboard moves.
 
-Recipients are managed in each brand's `manifest.json`:
+Recipients are managed in the brand's `manifest.json`:
 
 ```json
 "recipients": [
